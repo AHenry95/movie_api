@@ -3,7 +3,7 @@ const express = require('express'),
 
 const app = express();
 
-let topMovies = [
+let movies = [
     {
         title: 'The Brutalist',
         director: 'Brady Corbert'
@@ -59,7 +59,7 @@ app.get('/index.html', (req, res) => {
 })
 
 app.get('/movies', (req, res) =>{
-    res.json(topMovies);
+    res.json(movies);
 });
 
 app.use((err, req, res, next) => {
