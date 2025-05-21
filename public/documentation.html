@@ -3,6 +3,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-wdith, initial-scale=1">
     <title>Movie API Documentation</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
@@ -24,6 +25,166 @@
             <li><a href="/movies">http://localhost:8080/movies</a> - This opens an array containing JSON objects for my favorite movies from the 2025 Oscars. Each object includes the title of the movie and the director.</li>
         </ul> 
     </p>
+
+    <div class="endpoints">
+        <h3>Endpoints</h3>
+       <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>URL</th>
+                    <th class="description">Description</th>
+                    <th>Parameters</th>
+                    <th class="request">Request Format</th>
+                    <th>Response</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>GET</td>
+                    <td>/movies</td>
+                    <td>Returns a JSON object containing all the movies and their data stored within the movies array</td>
+                    <td>None</td>
+                    <td>N/A</td>
+                    <td>
+                        <pre><code>{
+    {
+        "title": "movie title",
+        "description": "movie description",
+        "director": "director object",
+        "genre": "genre object"
+    }
+}</code></pre>
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td>/movies/:title</td>
+                    <td>Returns a JSON object containing the details for a single movie</td>
+                    <td><span class="parameter">:title</span> The title of the movie</td>
+                    <td>N/A</td>
+                    <td>
+                        <pre><code>{
+    "title": "movie title",
+    "description": "movie description",
+    "director": "director object",
+    "genre": "genre object"
+}</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td>/movies/genres/:genreName</td>
+                    <td>Returns a JSON object containing information about a speicific genre</td>
+                    <td><span class="parameter">:genreName</span> The name of the genre</td>
+                    <td>N/A</td>
+                    <td>
+                        <pre><code>{
+    "genre": "genre name",
+    "description": "description of genre"
+}</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>GET</td>
+                    <td>/movies/directors/:directorName</td>
+                    <td>Returns a JSON object containing information about a director</td>
+                    <td><span class="parameter">:directorName</span> The name of the director</td>
+                    <td>N/A</td>
+                    <td>
+                        <pre><code>{
+    "name": "director name",
+    "bio": "director biography",
+    "birthYear": "year director was born",
+    "death year": "year director died"
+}</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>POST</td>
+                    <td>/users</td>
+                    <td>Requires a new user JSON object, and returns the JSON object once added, including a unique ID for the user</td>
+                    <td>None</td>
+                    <td>
+                        <pre><code>{
+    "username": "example username",
+    "password": "examplePassword"
+    "favList": []
+}</code></pre>
+                    </td>
+                    <td>
+                        <pre><code>{
+    "username": "example username",
+    "password": "examplePassword"
+    "favList": []
+    'userID': "exampleId"
+}</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>PUT</td>
+                    <td>/users/:id</td>
+                    <td>Requires a JSON object with a name property in order to update the exisiting user's name. Returns a JSON object with the updated user detials.</td>
+                    <td><span class="parameter">:id</span> The id of the user</td>
+                    <td>
+                        <pre><code>{
+    "name": "newName"
+}</code></pre>
+                    </td>
+                    <td>
+                        <pre><code>{
+    "id": 1,
+    "name": "newName",
+    "favList": []
+}</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>POST</td>
+                    <td>/users/:id/:movieTitle</td>
+                    <td>Adds a movie to a user's favorites list. Returns a message informing the user that the movie has been added to the user's favorites list.</td>
+                    <td>
+                        <span class="parameter">:id</span> The id of the user
+                        <span class="parameter lower ">:movieTitle</span> The title of the movie
+                    </td>
+                    <td>N/A</td>
+                    <td>
+                        <pre><code>:movieTitle has been added to user :id's Favorites List.</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>DELETE</td>
+                    <td>/users/:id/:movieTitle</td>
+                    <td>Removes a movie from a user's Favorites List. Returns a message informing the user that the movie has been removed from the user's favorites list.</td>
+                    <td>
+                        <span class="parameter">:id</span> The id of the user
+                        <span class="parameter lower">:movieTitle</span> The title of the movie
+                    </td>
+                    <td>N/A</td>
+                    <td>
+                        <pre><code>movieTitle has been removed from user :id's Favorites List.</code></pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>DELETE</td>
+                    <td>/users/:name</td>
+                    <td>Removes a user from the user list. Returns an updated users array as a JSON object.</td>
+                    <td><span class="parameter">:name</span> The name of the user</td>
+                    <td>N/A</td>
+                    <td>
+                        <pre><code>[
+    {
+        "id": 1,
+        "name": "Andrew",
+        "favList": []
+    }
+]</code></pre>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     <a href="index.html">Return to Home Page</a>
 </body>

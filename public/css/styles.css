@@ -1,0 +1,75 @@
+/* General */
+
+body {
+    font-family: Geneva, sans-serif;
+    line-height: 1.4;
+    padding: 10px;
+}
+
+/* Headers */
+h1 {
+    font-size: 2.5rem;
+    margin: 10px;
+    text-align: center;
+}
+
+h2, h3 {
+    text-decoration: underline;
+}
+
+h3 {
+    font-size: 1.2rem;
+}
+/* Links */ 
+a {
+    color: #1FB57A;
+}
+
+a:hover {
+    color: #93E9BE;
+    text-decoration: none;
+}
+
+a:active {
+    color: #ff7034; 
+}
+
+/* table */ 
+table {
+    border-collapse: collapse;
+    background-color: #fff;
+    border: 2px solid #000;
+}
+
+thead {
+    background-color: #3bb83be0;
+    text-decoration: underline;
+}
+
+th, 
+td {
+    border: 1px solid #3f3f3f;
+    padding: 0.75rem;
+    text-align: center;
+    vertical-align: top;
+}
+
+.parameter {
+    background-color: #040496;
+    color: #fff;
+    text-decoration: underline;
+    display: block;
+    border-radius: 5px;
+}
+
+.lower {
+    margin-top: 25px;
+}
+
+pre {
+    text-align: left;
+    padding: 8px;
+    background-color: #424242;
+    color: #e4d63a;
+    border-radius: 5px;
+}
