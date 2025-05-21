@@ -119,9 +119,6 @@ app.get('/', (req, res) => {
     res.send('Welcome to the myFlix app! Please <a href="/index.html">Click Here </a> to navigate to the home page!');
 });
 
-// app.get('/index.html', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'index.html'));
-// })
  
 app.get('/movies', (req, res) =>{
     res.json(movies);
