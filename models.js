@@ -12,7 +12,7 @@ let movieSchema = mongoose.Schema({
         Name: String,
         Description: String
     },
-    Actors: [String],
+    Actors: [{type: mongoose.Schema.Types.ObjectId, ref: 'Actor'}],
 });
 
 let userSchema = mongoose.Schema({
@@ -20,13 +20,13 @@ let userSchema = mongoose.Schema({
     Username: {type: String, required: true},
     Password: {type: String, required: true},
     Birthdate: String,
-    Favorites: [String]
+    Favorites: [{type: mongoose.Schema.Types.ObjectId, ref:'Movie'}]
 });
 
 let actorsSchema = mongoose.Schema({ 
     Name: {type: String, required: true},
     Birthyear: String,
-    Movies: [String]
+    Movies: [{type: mongoose.Schema.Types.ObjectId, ref: 'Movie'}]
 });
 
 let Movie = mongoose.model('Movie', movieSchema);
