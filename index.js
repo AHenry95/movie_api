@@ -1,7 +1,14 @@
 const express = require('express'),
   morgan = require('morgan'),
   bodyParser = require('body-parser'),
-  uuid = require('uuid');
+  uuid = require('uuid'),
+  mongoose = require('mongoose'),
+  Models = require('./models.js')
+;
+
+const Movies = Models.Movie;
+const Users = Models.User;
+const Actors = Models.Actor;
 
 const app = express();
 
@@ -9,108 +16,59 @@ app.use(bodyParser.json());
 app.use(morgan('common'));
 app.use(express.static('public'));
 
-let users = [
-    {
-        id: 1,
-        name: "Andrew",
-        favList: []
-    }
-]
-
-let movies = [
-    {
-        Title: 'The Brutalist',
-        Director: {
-            Name: 'Brady Corbet',
-            Bio: "Brady Corbet is an American filmmaker and actor. He made is directorial debut with the psychological drama The \"Childhood of a Leader\" (2015). He has since co-written and directed the musical drama \"Vox Lux\" (2018) and the period epic \"The Brutalist\".", 
-            BirthYear: 1988
-        },
-        Genre: {
-            Name: "Period Drama",
-            Description: "Films set in a speicific historical era, focusing on the social norms, conflicts, and aesthetics of the time."
-        },
-    },
-    {
-        Title: 'Flow',
-        Director: {
-            Name: 'Gints Zilbalodis'
-        }
-    },
-    {
-        Title: 'Sing Sing',
-        Director: {
-            Name: 'Greg Kewdar'
-        }
-    },
-    {
-        Title: 'Conclave',
-        Director: {
-            Name: 'Edward Berger'
-        }
-    },
-    {
-        Title: 'Nickel Boys',
-        Director: {
-            Name: 'RaMell Ross'
-        }
-    },
-    {
-        Title: 'Nosferatu',
-        Director: {
-            Name: 'Robert Eggers'
-        }
-    },
-    {
-        Title: 'Anora',
-        Director: {
-            Name: 'Sean Baker'
-        }
-    },
-    {
-        Title: 'Dune: Part Two',
-        Director: {
-            Name: 'Denis Villeneuve'
-        }
-    },
-    {
-        Title: 'The Substance',
-        Director: {
-            Name: 'Coralie Fargeat'
-        }
-    },
-    {
-        Title: 'I\'m Still Here',
-        Director: {
-            Name:'Ainda Estou Aqui'
-        }
-    }
-];
+mongoose.connect('mongodb://localhost:27017/myFlixDB', {useNewUrlParser: true, useUnifiedTopology: true});
 
 //CREATE Requests 
 
-app.post('/users', (req, res) => {
-    const newUser = req.body;
+// Adds New User 
+app.post('/users', async (req, res) => {
+    try {
+        const exisitingUser = await Users.findOne({ Username: req.body.Username });
+        
+        if (exisitingUser) {
+            return res.status(409).send(req.body.Username + ' already exisits');
+        }
+       
+        const newUser = await Users.create({
+            Name: req.body.Name,
+            Username: req.body.Username,
+            Password: req.body.Password,
+            Birthdate: req.body.Birthdate
+        });
 
-    if(!newUser.name) {
-        const message = 'There is no name in the request body. Please add a name and try again';
-        res.status(400).send(message);
-    } else {
-        newUser.id = uuid.v4();
-        users.push(newUser);
-        res.status(201).send(newUser);
+        return res.status(201).json(newUser);
+    } 
+    catch(err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
     }
 });
 
-app.post('/users/:id/:movieTitle', (req, res) => {
-    const {id, movieTitle} = req.params; 
+//Adds Movie to User's FavList
+app.post('/users/:Username/movies/:Title', async (req, res) => {
+    try {
+        const movie = await Movies.findOne({ Title: req.params.Title});
+        const userToUpdate = await Users.findOne({ Username: req.params.Username });
 
-    let user = users.find ( user => user.id == id);
+        if(!movie) {
+            return res.status(404).send('Movie Not Found');
+        }
 
-    if (user) {
-        user.favList.push(movieTitle);
-        res.status(200).send(`${movieTitle} has been added to user ${id}'s Favorites List.`);
-    } else {
-        res.status(400).send('User not found, movie could not be added to Favorites List.');
+        if(!userToUpdate) {
+            return res.status(404).send('No such User');
+        }
+
+        const updatedUser = await Users.findOneAndUpdate(
+            { Username: req.params.Username },
+            { $push: {Favorites: movie._id} },
+            { new: true } 
+        );
+
+        res.json(updatedUser); 
+    }
+    catch(err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
     }
 });
 
@@ -119,85 +77,143 @@ app.get('/', (req, res) => {
     res.send('Welcome to the myFlix app! Please <a href="/index.html">Click Here </a> to navigate to the home page!');
 });
 
- 
-app.get('/movies', (req, res) =>{
-    res.json(movies);
+// Get a list of all movies in the database
+app.get('/movies', async (req, res) => {
+    try {
+        const allMovies = await Movies.find();
+
+        res.status(200).json(allMovies);
+    }
+    catch(err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    }    
 });
 
-app.get('/movies/:title', (req, res) => {
-    const {title} = req.params;
-    const movie = movies.find( movie => movie.Title === title); 
+// Get info about a movie by title
 
-    if (movie) {
-        res.status(200).json(movie);
-    } else {
-        res.status(400).send('This movie is not in the database. Please try another movie!')
+app.get('/movies/:Title', async (req, res) => {
+    try {
+        const movie = await Movies.findOne({ Title: req.params.Title }); 
+
+        if (movie) {
+            res.status(200).json(movie);
+        } else {
+            res.status(400).send('This movie is not in the database. Please try another movie!')
+        }
+    }
+    catch(err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
     }
 }); 
 
-app.get('/movies/genre/:genreName', (req, res) => {
-    const {genreName} = req.params;
-    const genre = movies.find( movie => movie.Genre.Name = genreName).Genre;
+// Get info about genre by genre name 
+app.get('/movies/genre/:genreName', async (req, res) => {
+    try {
+        const movie = await Movies.findOne({ "Genre.Name": req.params.genreName });
+        const genre = movie.Genre;
 
-    if (genre) {
-        res.status(200).json(genre);
-    } else {
-        res.status(400).send('There is no info about this genre in the database. Sorry!');
+        if (genre) {
+            res.status(200).json(genre);
+        } else {
+            res.status(400).send('There is no info about this genre in the database. Sorry!');
+        }
+    }
+    catch(err) {
+        console.error(err);
+        res.status(500).send('Error: '+ err);
     }
 });
 
-app.get('/movies/director/:directorName', (req, res) => {
-    const {directorName} = req.params;
-    const director = movies.find( movie => movie.Director.Name === directorName).Director;
+// Get details about director by name
+app.get('/movies/director/:directorName', async (req, res) => {
+    try {    
+        const movie = await Movies.findOne({ "Director.Name": req.params.directorName });
+        const director = movie.Director;
 
-    if (director) {
-        res.status(200).json(director);
-    } else {
-        res.status(400).send('There is no information about ' + dirName.Name + ' in this database.');
+        if (director) {
+            res.status(200).json(director);
+        } else {
+            res.status(400).send('There is no information about ' + req.params.directorName + ' in this database.');
+        }
+    }
+    catch(err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
     }
 });
 
 // UPDATE Requests
 
-app.put('/users/:id', (req, res) => {
-    const {id} = req.params;
-    const updatedUser = req.body;
+//Change user password, via their email 
+app.put('/users/:email', async (req, res) => {
+    try { 
+        const user = await Users.findOne({ Email: req.params.email });
 
-    let user = users.find(user => user.id == id); 
+        if (!user) {
+            return res.status(404).send('The requested user could not be found.');
+        }
 
-    if (user) {
-        user.name = updatedUser.name;
-        res.status(200).json(user);
-    } else {
-        res.status(400).send("User not found");
+        const updatedUser = await Users.findOneAndUpdate(
+            { Email: req.params.email},
+            { $set: { 
+                Name: req.body.Name,
+                Email: req.body.Email,
+                Username: req.body.Username,
+                Password: req.body.Password,
+                Birthdate: req.body.Birthdate
+            }},
+            { new: true }
+        );
+
+        res.status(200).json(updatedUser);
+    }
+    catch(err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
     }
 });
 
 // DELETE Requests
 
-app.delete('/users/:id/:movieTitle', (req, res) => {
-    const {id, movieTitle} = req.params;
+//Removes selected movie from user's favorite list, user is selected via their email address
+app.delete('/users/:email/:movieTitle', async (req, res) => {
+    try {
+        const movie = await Movies.findOne({ Title: req.params.movieTitle });
+        const user = await Users.findOne({ Email: req.params.email });
 
-    let user = users.find( user => user.id == id);
+        if (user) {
+            await Users.findOneAndUpdate(
+                { Email: req.params.email },
+                { $pull: { Favorites: movie._id }},
+                { new: true }
+            );
+            res.status(200).send(`${movie.Title} has been removed from ${user.Name}'s Favorites List.`);
+        } else {
+            res.status(400).send('User not found, movie could not be removed to Favorites List.');
+        } /*Could potentially add an else/if statement to return different error messages if the user could be found but the movie was not on their favList.*/
+    }
+    catch(err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    }
+});
 
-    if (user) {
-        user.favList = user.favList.filter(title => title !== movieTitle);
-        res.status(200).send(`${movieTitle} has been removed from ${id}'s Favorites List.`);
-    } else {
-        res.status(400).send('User not found, movie could not be removed to Favorites List.');
-    } // Could potentially add an else/if statement to return different error messages if the user could be found but the movie was not on their favList.
-})
-
-app.delete('/users/:id/', (req, res) => {
-    const {id} = req.params; 
-
-    let user = users.find (user => user.id == id);
-
-    if (user) {
-        users = users.filter(user => user.id != id);
-        res.status(200).json(users);
-    } else {
-        res.status(400).send('The user you entered does not exisit.');
+// Removes User identifed via their email address 
+app.delete('/users/:email/', async (req, res) => {
+    try {
+        const user = await Users.findOneAndDelete({ Email: req.params.email });
+        
+        if (!user) {
+            res.status(400).send('There is no user with that email address.');   
+        } else {
+            res.status(200).send(user.Username + ' was deleted from myFlix.');
+        }
+    }   
+    catch(err){
+        console.error(err);
+        res.status(500).send('Error: ' + err);
     }
 });
 
