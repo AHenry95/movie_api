@@ -49,12 +49,24 @@
                     <td>
                         <pre><code>{
     {
-        "title": "movie title",
-        "description": "movie description",
-        "director": "director object",
-        "genre": "genre object"
-    }
-}</code></pre>
+        "_id": "exampleID",
+        "Title": "movie title",
+        "Description": "movie description",
+        "Director": {
+            "Name": "Director Name",
+            "Bio": "Director Bio",
+            "BirthYear" "Director Birthyear"
+        },
+        "Genre": {
+            "Name": "Genre Name",
+            Description: "Genre Description"
+        },
+        "Actors": [
+            "array of ObjectIDs for Actors"    
+        ]
+    },
+}
+</pre>
                         
                     </td>
                 </tr>
@@ -66,11 +78,23 @@
                     <td>N/A</td>
                     <td>
                         <pre><code>{
-    "title": "movie title",
-    "description": "movie description",
-    "director": "director object",
-    "genre": "genre object"
-}</code></pre>
+    "_id": "exampleID",
+        "Title": "movie title",
+        "Description": "movie description",
+        "Director": {
+            "Name": "Director Name",
+            "Bio": "Director Bio",
+            "BirthYear" "Director Birthyear"
+        },
+        "Genre": {
+            "Name": "Genre Name",
+            Description: "Genre Description"
+        },
+        "Actors": [
+            "array of ObjectIDs for Actors"    
+        ]
+}
+</code></pre>
                     </td>
                 </tr>
                 <tr>
@@ -97,7 +121,6 @@
     "name": "director name",
     "bio": "director biography",
     "birthYear": "year director was born",
-    "death year": "year director died"
 }</code></pre>
                     </td>
                 </tr>
@@ -108,44 +131,59 @@
                     <td>None</td>
                     <td>
                         <pre><code>{
-    "username": "example username",
-    "password": "examplePassword"
-    "favList": []
+    "Name": "example Name", 
+    "Email: "example.email@example.com",
+    "Username": "example username",
+    "Password": "examplePassword",
+    "Birhdate": "example Birthdate",
+    "Favorites": []
 }</code></pre>
                     </td>
                     <td>
                         <pre><code>{
-    "username": "example username",
-    "password": "examplePassword"
-    "favList": []
-    'userID': "exampleId"
+    "_id": "example User ID"                        
+    "Name": "example Name", 
+    "Email: "example.email@example.com",
+    "Username": "example username",
+    "Password": "examplePassword",
+    "Birhdate": "example Birthdate",
+    "Favorites": []
 }</code></pre>
                     </td>
                 </tr>
                 <tr>
                     <td>PUT</td>
-                    <td>/users/:id</td>
-                    <td>Requires a JSON object with a name property in order to update the exisiting user's name. Returns a JSON object with the updated user detials.</td>
+                    <td>/users/:emai;</td>
+                    <td>Requires a JSON object with the user's Name, Email, Username, Password, and Birthdate. The user document will be updated based on any changes to the exisiting user details. Returns a JSON object with the updated user detials.</td>
                     <td><span class="parameter">:id</span> The id of the user</td>
                     <td>
                         <pre><code>{
-    "name": "newName"
+    "Name": "example Name", 
+    "Email: "example.email@example.com",
+    "Username": "example NEW username",
+    "Password": "examplePassword",
+    "Birhdate": "example Birthdate",
+    "Favorites": []
 }</code></pre>
                     </td>
                     <td>
                         <pre><code>{
-    "id": 1,
-    "name": "newName",
-    "favList": []
+     "_id": "example User ID"                        
+    "Name": "example Name", 
+    "Email: "example.email@example.com",
+    "Username": "example NEW username",
+    "Password": "examplePassword",
+    "Birhdate": "example Birthdate",
+    "Favorites": []
 }</code></pre>
                     </td>
                 </tr>
                 <tr>
                     <td>POST</td>
-                    <td>/users/:id/:movieTitle</td>
+                    <td>/users/:email/:movieTitle</td>
                     <td>Adds a movie to a user's favorites list. Returns a message informing the user that the movie has been added to the user's favorites list.</td>
                     <td>
-                        <span class="parameter">:id</span> The id of the user
+                        <span class="parameter">:email</span> The user's email address
                         <span class="parameter lower ">:movieTitle</span> The title of the movie
                     </td>
                     <td>N/A</td>
@@ -155,10 +193,10 @@
                 </tr>
                 <tr>
                     <td>DELETE</td>
-                    <td>/users/:id/:movieTitle</td>
+                    <td>/users/:email/:movieTitle</td>
                     <td>Removes a movie from a user's Favorites List. Returns a message informing the user that the movie has been removed from the user's favorites list.</td>
                     <td>
-                        <span class="parameter">:id</span> The id of the user
+                        <span class="parameter">:email</span> The user's email address
                         <span class="parameter lower">:movieTitle</span> The title of the movie
                     </td>
                     <td>N/A</td>
@@ -168,18 +206,14 @@
                 </tr>
                 <tr>
                     <td>DELETE</td>
-                    <td>/users/:name</td>
-                    <td>Removes a user from the user list. Returns an updated users array as a JSON object.</td>
-                    <td><span class="parameter">:name</span> The name of the user</td>
+                    <td>/users/:email</td>
+                    <td>Removes a user from the user list. Returns a message stating the user has been removed from myFlix, refering to the user using their username.</td>
+                    <td><span class="parameter">:email</span> The user's email address</td>
                     <td>N/A</td>
                     <td>
-                        <pre><code>[
-    {
-        "id": 1,
-        "name": "Andrew",
-        "favList": []
-    }
-]</code></pre>
+                        <pre><code>
+"username" was deleted from myFlix.
+                        </code></pre>
                     </td>
                 </tr>
             </tbody>

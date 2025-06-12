@@ -31,6 +31,7 @@ app.post('/users', async (req, res) => {
        
         const newUser = await Users.create({
             Name: req.body.Name,
+            Email: req.body.Email,
             Username: req.body.Username,
             Password: req.body.Password,
             Birthdate: req.body.Birthdate
@@ -45,9 +46,9 @@ app.post('/users', async (req, res) => {
 });
 
 //Adds Movie to User's FavList
-app.post('/users/:Username/movies/:Title', async (req, res) => {
+app.post('/users/:Username/movies/:title', async (req, res) => {
     try {
-        const movie = await Movies.findOne({ Title: req.params.Title});
+        const movie = await Movies.findOne({ Title: req.params.title});
         const userToUpdate = await Users.findOne({ Username: req.params.Username });
 
         if(!movie) {
@@ -92,9 +93,9 @@ app.get('/movies', async (req, res) => {
 
 // Get info about a movie by title
 
-app.get('/movies/:Title', async (req, res) => {
+app.get('/movies/:title', async (req, res) => {
     try {
-        const movie = await Movies.findOne({ Title: req.params.Title }); 
+        const movie = await Movies.findOne({ Title: req.params.title }); 
 
         if (movie) {
             res.status(200).json(movie);
