@@ -150,25 +150,46 @@ app.get('/movies/director/:directorName', async (req, res) => {
 //Change user password, via their email 
 app.put('/users/:email', async (req, res) => {
     try { 
-        const user = await Users.findOne({ Email: req.params.email });
+        let update = {};
+
+        if(req.body.Name){
+            update['Name'] = req.body.Name;
+        }
+
+        if(req.body.Email){
+            update['Email'] = req.body.Email;
+        }
+
+        if(req.body.Username){
+            update['Username'] = req.body.Username;
+        }
+
+        if(req.body.Password){
+            update['Password'] = req.body.Password;
+        }
+
+       if(req.body.Birthdate){
+            update['Birthdate'] = req.body.Birthdate;
+       }
+
+        const user = await Users.findOneAndUpdate(
+            { Email: req.params.email},
+            { $set: update },
+            { new: true }
+        );
 
         if (!user) {
             return res.status(404).send('The requested user could not be found.');
         }
 
-        const updatedUser = await Users.findOneAndUpdate(
-            { Email: req.params.email},
-            { $set: { 
-                Name: req.body.Name,
-                Email: req.body.Email,
-                Username: req.body.Username,
-                Password: req.body.Password,
-                Birthdate: req.body.Birthdate
-            }},
-            { new: true }
+        return res.status(200).json(
+            {
+                Name: user.Name,
+                Email: user.Email,
+                Username: user.Username,
+                Birthdate: user.Birthdate
+            }
         );
-
-        res.status(200).json(updatedUser);
     }
     catch(err) {
         console.error(err);
