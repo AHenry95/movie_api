@@ -155,6 +155,10 @@ app.get('/movies/director/:directorName', passport.authenticate('jwt', { session
 //Change user password, via their email 
 app.put('/users/:email', passport.authenticate('jwt', { session: false}), async (req, res) => {
     try { 
+        if(req.user.Username !== req.params.Username){
+            return res.status(400).send('Parmission denied');    
+        }
+
         let update = {};
 
         if(req.body.Name){
