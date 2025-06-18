@@ -152,8 +152,8 @@ app.get('/movies/director/:directorName', passport.authenticate('jwt', { session
 
 // UPDATE Requests
 
-//Change user password, via their email 
-app.put('/users/:email', passport.authenticate('jwt', { session: false}), async (req, res) => {
+//Change user password, via their username 
+app.put('/users/:Username', passport.authenticate('jwt', { session: false}), async (req, res) => {
     try { 
         if(req.user.Username !== req.params.Username){
             return res.status(400).send('Parmission denied');    
@@ -182,7 +182,7 @@ app.put('/users/:email', passport.authenticate('jwt', { session: false}), async 
        }
 
         const user = await Users.findOneAndUpdate(
-            { Email: req.params.email},
+            { Username: req.params.Username},
             { $set: update },
             { new: true }
         );
