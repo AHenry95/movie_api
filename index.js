@@ -36,11 +36,13 @@ app.post('/users', async (req, res) => {
             return res.status(409).send(req.body.Username + ' already exisits');
         }
        
+        let hashedPassword = Users.hashPassword(req.body.Password);
+
         const newUser = await Users.create({
             Name: req.body.Name,
             Email: req.body.Email,
             Username: req.body.Username,
-            Password: req.body.Password,
+            Password: hashedPassword,
             Birthdate: req.body.Birthdate
         });
 
