@@ -4,7 +4,8 @@ const express = require('express'),
   uuid = require('uuid'),
   mongoose = require('mongoose'),
   Models = require('./models.js'),
-  passport = require('passport')
+  passport = require('passport');
+  cors = require('cors')
 ;
 
 require('./passport');
@@ -15,6 +16,7 @@ const Actors = Models.Actor;
 
 const app = express();
 
+app.use(cors()); 
 app.use(bodyParser.json());
 app.use(morgan('common'));
 app.use(express.static('public'));
