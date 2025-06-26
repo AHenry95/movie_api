@@ -8,6 +8,8 @@ const express = require('express'),
   cors = require('cors')
 ;
 
+const { check, validationResult } = require('express-validator');
+
 require('./passport');
 
 const Movies = Models.Movie;
@@ -28,7 +30,21 @@ mongoose.connect('mongodb://localhost:27017/myFlixDB', {useNewUrlParser: true, u
 //CREATE Requests 
 
 // Adds New User 
-app.post('/users', async (req, res) => {
+app.post('/users', 
+    [
+        check('Username', 'Username is required').not().isEmpty(),
+        check('Username', 'Username must be at least 5 characters').isLength({ min: 5 }),
+        check('Username', 'Username contains non-alphanumeric characters - not allowed').isAplphanumeric(),
+        check('Password', 'Password is required').not().isEmpty(),
+        check('Password', 'Password must be at least 8 characters').isLength({ min: 8}),
+        check('Email', 'Email does not appear to be valid').isEmail()
+    ], async (req, res) => {
+    
+    let errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        returnres.status(422).json({ errors: errors.array() });
+    }
     try {
         const exisitingUser = await Users.findOne({ Username: req.body.Username });
         
@@ -259,6 +275,8 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something broke! Oh no =(');
 })
 
-app.listen(8080, () =>{
-    console.log('Your app is listening on port 8080.');
+const port = process.env.PORT || 8080;
+
+app.listen(port, '0.0.0.0', () => {
+    console.log('Listening on Port ' + port);
 });
