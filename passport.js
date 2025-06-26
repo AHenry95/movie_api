@@ -23,13 +23,14 @@ passport.use(
                     message: 'Incorrect username of password.'
                 });
             }
-            console.log('finished');
-            return callback(null, user);
-        
+
             if(!user.validatePassword(password)){
                 console.log('incorrectpassword');
                 return callback(null, false, { message: 'Incorrect password'});
             }
+            
+            console.log('finished');
+            return callback(null, user);
         })
         .catch((error) => {
             if (error){

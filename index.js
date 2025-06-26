@@ -201,7 +201,7 @@ app.put('/users/:Username',
         }
 
         if(req.body.Password){
-            update['Password'] = req.body.Password;
+            update['Password'] = Users.hashPassword(req.body.Password);
         }
 
        if(req.body.Birthdate){
