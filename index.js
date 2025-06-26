@@ -173,7 +173,14 @@ app.get('/movies/director/:directorName', passport.authenticate('jwt', { session
 // UPDATE Requests
 
 //Change user password, via their username 
-app.put('/users/:Username', passport.authenticate('jwt', { session: false}), async (req, res) => {
+app.put('/users/:Username', 
+    [
+        check('Username', 'Username must be at least 5 characters').isLength({ min: 5 }),
+        check('Username', 'Username contains non-alphanumeric characters - not allowed').isAplphanumeric(),
+        check('Password', 'Password must be at least 8 characters').isLength({ min: 8}),
+        check('Email', 'Email does not appear to be valid').isEmail()
+    ],
+    passport.authenticate('jwt', { session: false}), async (req, res) => {
     try { 
         if(req.user.Username !== req.params.Username){
             return res.status(400).send('Parmission denied');    
