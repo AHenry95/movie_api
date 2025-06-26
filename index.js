@@ -34,7 +34,7 @@ app.post('/users',
     [
         check('Username', 'Username is required').not().isEmpty(),
         check('Username', 'Username must be at least 5 characters').isLength({ min: 5 }),
-        check('Username', 'Username contains non-alphanumeric characters - not allowed').isAplphanumeric(),
+        check('Username', 'Username contains non-alphanumeric characters - not allowed').isAlphanumeric(),
         check('Password', 'Password is required').not().isEmpty(),
         check('Password', 'Password must be at least 8 characters').isLength({ min: 8}),
         check('Email', 'Email does not appear to be valid').isEmail()
@@ -176,7 +176,7 @@ app.get('/movies/director/:directorName', passport.authenticate('jwt', { session
 app.put('/users/:Username', 
     [
         check('Username', 'Username must be at least 5 characters').isLength({ min: 5 }),
-        check('Username', 'Username contains non-alphanumeric characters - not allowed').isAplphanumeric(),
+        check('Username', 'Username contains non-alphanumeric characters - not allowed').isAlphanumeric(),
         check('Password', 'Password must be at least 8 characters').isLength({ min: 8}),
         check('Email', 'Email does not appear to be valid').isEmail()
     ],
