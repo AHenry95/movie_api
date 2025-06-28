@@ -43,7 +43,7 @@ app.post('/users',
     let errors = validationResult(req);
 
     if(!errors.isEmpty()){
-        returnres.status(422).json({ errors: errors.array() });
+        return res.status(422).json({ errors: errors.array() });
     }
     try {
         const exisitingUser = await Users.findOne({ Username: req.body.Username });
