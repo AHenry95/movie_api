@@ -185,56 +185,62 @@ app.put('/users/:Username',
         check('Email', 'Email does not appear to be valid').isEmail()
     ],
     passport.authenticate('jwt', { session: false}), async (req, res) => {
-    try { 
-        if(req.user.Username !== req.params.Username){
-            return res.status(400).send('Parmission denied');    
-        }
+        let errors = validationResult(req);
 
-        let update = {};
-
-        if(req.body.Name){
-            update['Name'] = req.body.Name;
-        }
-
-        if(req.body.Email){
-            update['Email'] = req.body.Email;
-        }
-
-        if(req.body.Username){
-            update['Username'] = req.body.Username;
-        }
-
-        if(req.body.Password){
-            update['Password'] = Users.hashPassword(req.body.Password);
-        }
-
-       if(req.body.Birthdate){
-            update['Birthdate'] = req.body.Birthdate;
-       }
-
-        const user = await Users.findOneAndUpdate(
-            { Username: req.params.Username},
-            { $set: update },
-            { new: true }
-        );
-
-        if (!user) {
-            return res.status(404).send('The requested user could not be found.');
-        }
-
-        return res.status(200).json(
-            {
-                Name: user.Name,
-                Email: user.Email,
-                Username: user.Username,
-                Birthdate: user.Birthdate
+        if(!errors.isEmpty()){
+            return res.status(422).json({ errors: errors.array() });
+        }; 
+        
+        try { 
+            if(req.user.Username !== req.params.Username){
+                return res.status(400).send('Parmission denied');    
             }
-        );
-    }
-    catch(err) {
-        console.error(err);
-        res.status(500).send('Error: ' + err);
-    }
+
+            let update = {};
+
+            if(req.body.Name){
+                update['Name'] = req.body.Name;
+            }
+
+            if(req.body.Email){
+                update['Email'] = req.body.Email;
+            }
+
+            if(req.body.Username){
+                update['Username'] = req.body.Username;
+            }
+
+            if(req.body.Password){
+                update['Password'] = Users.hashPassword(req.body.Password);
+            }
+
+        if(req.body.Birthdate){
+                update['Birthdate'] = req.body.Birthdate;
+        }
+
+            const user = await Users.findOneAndUpdate(
+                { Username: req.params.Username},
+                { $set: update },
+                { new: true }
+            );
+
+            if (!user) {
+                return res.status(404).send('The requested user could not be found.');
+            }
+
+            return res.status(200).json(
+                {
+                    Name: user.Name,
+                    Email: user.Email,
+                    Username: user.Username,
+                    Birthdate: user.Birthdate
+                }
+            );
+        }
+        catch(err) {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        }
 });
 
 // DELETE Requests
