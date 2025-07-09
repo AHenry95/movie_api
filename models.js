@@ -34,9 +34,9 @@ userSchema.methods.validatePassword = function(password){
 };
 
 let actorsSchema = mongoose.Schema({ 
-    Name: {type: String, required: true},
-    Birthyear: String,
-    Movies: [{type: mongoose.Schema.Types.ObjectId, ref: 'Movie'}]
+    name: {type: String, required: true},
+    birthyear: String,
+    movies: [{type: mongoose.Schema.Types.ObjectId, ref: 'Movie'}]
 });
 
 let Movie = mongoose.model('Movie', movieSchema);

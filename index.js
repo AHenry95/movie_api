@@ -26,10 +26,10 @@ app.use(express.static('public'));
 let auth = require('./auth')(app);
 
 // Connects with local MongoDB database
-// mongoose.connect('mongodb://localhost:27017/myFlixDB', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect('mongodb://localhost:27017/myFlixDB', {useNewUrlParser: true, useUnifiedTopology: true});
 
 // Connects with Atlas databse
-mongoose.connect(process.env.CONNECTION_URI, {useNewUrlParser: true, useUnifiedTopology: true});
+// mongoose.connect(process.env.CONNECTION_URI, {useNewUrlParser: true, useUnifiedTopology: true});
 
 //CREATE Requests 
 
@@ -110,8 +110,14 @@ app.get('/', (req, res) => {
 // Get a list of all movies in the database
 app.get('/movies', async (req, res) => {
     try {
-        const allMovies = await Movies.find();
-
+        const allMovies = await Movies.find().populate({
+            path: 'Actors',
+            populate: {
+                path: 'movies',
+                select: 'Title'
+            }
+        });
+        
         res.status(200).json(allMovies);
     }
     catch(err) {
@@ -124,7 +130,13 @@ app.get('/movies', async (req, res) => {
 
 app.get('/movies/:title', passport.authenticate('jwt', { session: false}), async (req, res) => {
     try {
-        const movie = await Movies.findOne({ Title: req.params.title }); 
+        const movie = await Movies.findOne({ Title: req.params.title }).populate({
+            path: 'Actors',
+            populate: {
+                path: 'movies',
+                select: 'Title'
+            }
+        });
 
         if (movie) {
             res.status(200).json(movie);
