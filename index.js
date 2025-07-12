@@ -108,7 +108,7 @@ app.get('/', (req, res) => {
 });
 
 // Get a list of all movies in the database
-app.get('/movies', async (req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const allMovies = await Movies.find().populate({
             path: 'Actors',
