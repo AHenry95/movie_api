@@ -123,7 +123,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
     catch(err) {
         console.error(err);
         res.status(500).send('Error: ' + err);
-    }    
+    }
 });
 
 // Get info about a movie by title
