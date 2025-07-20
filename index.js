@@ -119,7 +119,7 @@ app.get('/users', passport.authenticate('jwt', { session: false }), async (req, 
         console.error(err);
         res.status(500).send('Error: ' + err);
     }
-}
+});
 
 // Get a list of all movies in the database
 app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
