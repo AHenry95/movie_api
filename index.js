@@ -299,13 +299,13 @@ app.delete('/users/:email/:movieTitle', passport.authenticate('jwt', { session: 
     }
 });
 
-// Removes User identifed via their email address 
-app.delete('/users/:email/', passport.authenticate('jwt', {session: false }), async (req, res) => {
+// Removes User identifed via their username
+app.delete('/users/:username/', passport.authenticate('jwt', {session: false }), async (req, res) => {
     try {
-        const user = await Users.findOneAndDelete({ Email: req.params.email });
+        const user = await Users.findOneAndDelete({ Username: req.params.username });
         
         if (!user) {
-            res.status(400).send('There is no user with that email address.');   
+            res.status(400).send('There is no user with that username.');   
         } else {
             res.status(200).send(user.Username + ' was deleted from myFlix.');
         }
