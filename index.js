@@ -277,16 +277,21 @@ app.delete('/users/:email/:movieTitle', passport.authenticate('jwt', { session: 
         const movie = await Movies.findOne({ Title: req.params.movieTitle });
         const user = await Users.findOne({ Email: req.params.email });
 
-        if (user) {
-            await Users.findOneAndUpdate(
+        if(!movie) {
+            return res.status(404).send('Movie not found');
+        }
+
+        if(!user) {
+            return res.status(404).send('User not found');
+        }
+        
+        const updatedUser = await Users.findOneAndUpdate(
                 { Email: req.params.email },
                 { $pull: { Favorites: movie._id }},
                 { new: true }
-            );
-            res.status(200).send(`${movie.Title} has been removed from ${user.Name}'s Favorites List.`);
-        } else {
-            res.status(400).send('User not found, movie could not be removed to Favorites List.');
-        } /*Could potentially add an else/if statement to return different error messages if the user could be found but the movie was not on their favList.*/
+        );
+
+        res.status(200).json(updatedUser);
     }
     catch(err) {
         console.error(err);
