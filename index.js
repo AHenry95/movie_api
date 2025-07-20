@@ -107,6 +107,19 @@ app.get('/', (req, res) => {
     res.send('Welcome to the myFlix app! Please <a href="/index.html">Click Here </a> to navigate to the home page!');
 });
 
+
+// Get a list of all users
+app.get('/users', passport.authenticate('jwt', { session: false })), async (req, res) => {
+    try{
+        const allUsers = await Users.find();
+
+        res.status(200).json(allUsers)
+    }
+    catch(err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    }
+}
 // Get a list of all movies in the database
 app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
