@@ -36,6 +36,7 @@ mongoose.connect(process.env.CONNECTION_URI, {useNewUrlParser: true, useUnifiedT
 // Adds New User 
 app.post('/users', 
     [
+        check('Name', 'Name is required').not().isEmpty(),
         check('Username', 'Username is required').not().isEmpty(),
         check('Username', 'Username must be at least 5 characters').isLength({ min: 5 }),
         check('Username', 'Username contains non-alphanumeric characters - not allowed').isAlphanumeric(),
@@ -75,9 +76,9 @@ app.post('/users',
 });
 
 //Adds Movie to User's FavList
-app.post('/users/:Username/movies/:title', passport.authenticate('jwt', {session: false }), async (req, res) => {
+app.post('/users/:Username/movies/:movieID', passport.authenticate('jwt', {session: false }), async (req, res) => {
     try {
-        const movie = await Movies.findOne({ Title: req.params.title});
+        const movie = await Movies.findOne({ _id: req.params.movieID});
         const userToUpdate = await Users.findOne({ Username: req.params.Username });
 
         if(!movie) {
@@ -272,10 +273,10 @@ app.put('/users/:Username',
 // DELETE Requests
 
 //Removes selected movie from user's favorite list, user is selected via their email address
-app.delete('/users/:email/:movieTitle', passport.authenticate('jwt', { session: false}), async (req, res) => {
+app.delete('/users/:Username/movies/:movieID', passport.authenticate('jwt', { session: false}), async (req, res) => {
     try {
-        const movie = await Movies.findOne({ Title: req.params.movieTitle });
-        const user = await Users.findOne({ Email: req.params.email });
+        const movie = await Movies.findOne({ _id: req.params.movieID });
+        const user = await Users.findOne({ Username: req.params.Username });
 
         if(!movie) {
             return res.status(404).send('Movie not found');
