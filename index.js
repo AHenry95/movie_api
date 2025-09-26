@@ -122,6 +122,46 @@ app.get('/users', passport.authenticate('jwt', { session: false }), async (req, 
     }
 });
 
+// Get details for a single user 
+app.get('/users/:userID', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try{
+        const user = await Users.findOne({ _id: req.params.userID });
+
+        if(!user) {
+            return res.status(404).send('User not found');
+        }
+
+        res.status(200).json({
+            _id: user._id,
+            Name: user.Name,
+            Username: user.Username,
+            Email: user.Email,
+            Birthdate: user.Birthdate,
+            Favorites: user.Favorites
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    }
+});
+
+app.get('/users/:userID/favs', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try{
+        const user = await Users.findOne({ _id: req.params.userID }).populate('Favorites');
+
+        if(!user) {
+            return res.status(404).send('User not found');
+        }
+
+        res.status(200).json(user.Favorites);
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    }
+});
+
 // Get a list of all movies in the database
 app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
