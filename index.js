@@ -26,7 +26,7 @@ app.use(express.static('public'));
 let auth = require('./auth')(app);
 
 // Connects with local MongoDB database
-//mongoose.connect('mongodb://localhost:27017/myFlixDB', {useNewUrlParser: true, useUnifiedTopology: true});
+// mongoose.connect('mongodb://localhost:27017/myFlixDB', {useNewUrlParser: true, useUnifiedTopology: true});
 
 // Connects with Atlas databse
 mongoose.connect(process.env.CONNECTION_URI, {useNewUrlParser: true, useUnifiedTopology: true});
@@ -146,15 +146,18 @@ app.get('/users/:userID', passport.authenticate('jwt', { session: false }), asyn
     }
 });
 
+// Get a lit of a single user's favorite movies 
 app.get('/users/:userID/favs', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try{
-        const user = await Users.findOne({ _id: req.params.userID }).populate('Favorites');
+        const user = await Users.findOne({ _id: req.params.userID }).populate('Favorites', 'Title');
 
         if(!user) {
             return res.status(404).send('User not found');
         }
 
-        res.status(200).json(user.Favorites);
+        const movieTitles = user.Favorites.map(movie => movie.Title); 
+
+        res.status(200).json(movieTitles);
     }
     catch(err){
         console.error(err);
@@ -181,8 +184,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
     }
 });
 
-// Get info about a movie by title
-
+// Get info about a movie by movieID
 app.get('/movies/:movieID', passport.authenticate('jwt', { session: false}), async (req, res) => {
     try {
         const movie = await Movies.findOne({ _id: req.params.movieID }).populate({
