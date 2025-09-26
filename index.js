@@ -26,7 +26,7 @@ app.use(express.static('public'));
 let auth = require('./auth')(app);
 
 // Connects with local MongoDB database
-// mongoose.connect('mongodb://localhost:27017/myFlixDB', {useNewUrlParser: true, useUnifiedTopology: true});
+//mongoose.connect('mongodb://localhost:27017/myFlixDB', {useNewUrlParser: true, useUnifiedTopology: true});
 
 // Connects with Atlas databse
 mongoose.connect(process.env.CONNECTION_URI, {useNewUrlParser: true, useUnifiedTopology: true});
@@ -76,10 +76,10 @@ app.post('/users',
 });
 
 //Adds Movie to User's FavList
-app.post('/users/:Username/movies/:movieID', passport.authenticate('jwt', {session: false }), async (req, res) => {
+app.post('/users/:userID/movies/:movieID', passport.authenticate('jwt', {session: false }), async (req, res) => {
     try {
         const movie = await Movies.findOne({ _id: req.params.movieID});
-        const userToUpdate = await Users.findOne({ Username: req.params.Username });
+        const userToUpdate = await Users.findOne({ _id: req.params.userID });
 
         if(!movie) {
             return res.status(404).send('Movie Not Found');
@@ -90,8 +90,8 @@ app.post('/users/:Username/movies/:movieID', passport.authenticate('jwt', {sessi
         }
 
         const updatedUser = await Users.findOneAndUpdate(
-            { Username: req.params.Username },
-            { $push: {Favorites: movie._id} },
+            { _id: req.params.userID },
+            { $addToSet: {Favorites: movie._id} },
             { new: true } 
         );
 
@@ -143,9 +143,9 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
 
 // Get info about a movie by title
 
-app.get('/movies/:title', passport.authenticate('jwt', { session: false}), async (req, res) => {
+app.get('/movies/:movieID', passport.authenticate('jwt', { session: false}), async (req, res) => {
     try {
-        const movie = await Movies.findOne({ Title: req.params.title }).populate({
+        const movie = await Movies.findOne({ _id: req.params.movieID }).populate({
             path: 'Actors',
             populate: {
                 path: 'movies',
@@ -156,7 +156,7 @@ app.get('/movies/:title', passport.authenticate('jwt', { session: false}), async
         if (movie) {
             res.status(200).json(movie);
         } else {
-            res.status(400).send('This movie is not in the database. Please try another movie!')
+            res.status(404).send('This movie is not in the database. Please try another movie!')
         }
     }
     catch(err) {
@@ -204,7 +204,7 @@ app.get('/movies/director/:directorName', passport.authenticate('jwt', { session
 // UPDATE Requests
 
 //Change user password, via their username 
-app.put('/users/:Username', 
+app.put('/users/:userID', 
     [
         check('Username', 'Username must be at least 5 characters').optional().isLength({ min: 5 }),
         check('Username', 'Username contains non-alphanumeric characters - not allowed').optional().isAlphanumeric(),
@@ -219,8 +219,8 @@ app.put('/users/:Username',
         }; 
 
         try { 
-            if(req.user.Username !== req.params.Username){
-                return res.status(400).send('Parmission denied');    
+            if(req.user._id.toString() !== req.params.userID){
+                return res.status(403).send('Permission denied');    
             }
 
             let update = {};
@@ -246,7 +246,7 @@ app.put('/users/:Username',
         }
 
             const user = await Users.findOneAndUpdate(
-                { Username: req.params.Username},
+                { _id: req.params.userID},
                 { $set: update },
                 { new: true }
             );
@@ -273,10 +273,10 @@ app.put('/users/:Username',
 // DELETE Requests
 
 //Removes selected movie from user's favorite list, user is selected via their email address
-app.delete('/users/:Username/movies/:movieID', passport.authenticate('jwt', { session: false}), async (req, res) => {
+app.delete('/users/:userID/movies/:movieID', passport.authenticate('jwt', { session: false}), async (req, res) => {
     try {
         const movie = await Movies.findOne({ _id: req.params.movieID });
-        const user = await Users.findOne({ Username: req.params.Username });
+        const user = await Users.findOne({ _id: req.params.userID });
 
         if(!movie) {
             return res.status(404).send('Movie not found');
@@ -287,7 +287,7 @@ app.delete('/users/:Username/movies/:movieID', passport.authenticate('jwt', { se
         }
         
         const updatedUser = await Users.findOneAndUpdate(
-                { Username: req.params.Username },
+                { _id: req.params.userID },
                 { $pull: { Favorites: movie._id }},
                 { new: true }
         );
@@ -301,12 +301,12 @@ app.delete('/users/:Username/movies/:movieID', passport.authenticate('jwt', { se
 });
 
 // Removes User identifed via their username
-app.delete('/users/:username/', passport.authenticate('jwt', {session: false }), async (req, res) => {
+app.delete('/users/:userID/', passport.authenticate('jwt', {session: false }), async (req, res) => {
     try {
-        const user = await Users.findOneAndDelete({ Username: req.params.username });
+        const user = await Users.findOneAndDelete({ _id: req.params.userID });
         
         if (!user) {
-            res.status(400).send('There is no user with that username.');   
+            return res.status(400).send('There is no user with that username.');   
         } else {
             res.status(200).send(user.Username + ' was deleted from myFlix.');
         }

@@ -22,7 +22,6 @@
             <li><a href="/">http://localhost:8080/</a> - This opens the welcome page</li>
             <li><a href="/index.html">http://localhost:8080/index.html</a> - This open's the application's Home Page</li>
             <li><a href="#">http://localhost:8080/documentation</a> - This opens the application's documentation page (The one you are viewing now!)</li>
-            <li><a href="/movies">http://localhost:8080/movies</a> - This opens an array containing JSON objects for my favorite movies from the 2025 Oscars. Each object includes the title of the movie and the director.</li>
         </ul> 
     </p>
 
@@ -72,9 +71,9 @@
                 </tr>
                 <tr>
                     <td>GET</td>
-                    <td>/movies/:title</td>
+                    <td>/movies/:movieID</td>
                     <td>Returns a JSON object containing the details for a single movie</td>
-                    <td><span class="parameter">:title</span> The title of the movie</td>
+                    <td><span class="parameter">:movieID</span>The movie's unique ID string</td>
                     <td>N/A</td>
                     <td>
                         <pre><code>{
@@ -153,17 +152,12 @@
                 </tr>
                 <tr>
                     <td>PUT</td>
-                    <td>/users/:emai;</td>
-                    <td>Requires a JSON object with the user's Name, Email, Username, Password, and Birthdate. The user document will be updated based on any changes to the exisiting user details. Returns a JSON object with the updated user detials.</td>
-                    <td><span class="parameter">:id</span> The id of the user</td>
+                    <td>/users/userID</td>
+                    <td>Requires a JSON object with at least one of the user's Name, Email, Username, Password, or Birthdate. The user document will be updated based on any changes to the exisiting user details. Returns a JSON object with the updated user detials.</td>
+                    <td><span class="parameter">:userID</span>The user's unique ID string</td>
                     <td>
                         <pre><code>{
-    "Name": "example Name", 
-    "Email: "example.email@example.com",
-    "Username": "example NEW username",
-    "Password": "examplePassword",
-    "Birhdate": "example Birthdate",
-    "Favorites": []
+    "Username": "example NEW username"
 }</code></pre>
                     </td>
                     <td>
@@ -180,35 +174,53 @@
                 </tr>
                 <tr>
                     <td>POST</td>
-                    <td>/users/:email/:movieTitle</td>
-                    <td>Adds a movie to a user's favorites list. Returns a message informing the user that the movie has been added to the user's favorites list.</td>
+                    <td>/users/:userID/movies/:movieID</td>
+                    <td>Adds a movie to a user's favorites list. Returns an updated user JSON.</td>
                     <td>
-                        <span class="parameter">:email</span> The user's email address
-                        <span class="parameter lower ">:movieTitle</span> The title of the movie
+                        <span class="parameter">:userID</span>The user's unique ID string
+                        <span class="parameter lower ">:movieTitle</span>The movie's unique ID string
                     </td>
                     <td>N/A</td>
                     <td>
-                        <pre><code>:movieTitle has been added to user :id's Favorites List.</code></pre>
+                        <pre><code>{
+     "_id": "example User ID"                        
+    "Name": "example Name", 
+    "Email: "example.email@example.com",
+    "Username": "example username",
+    "Password": "examplePassword",
+    "Birhdate": "example Birthdate",
+    "Favorites": [
+        "abc123" // movieID string 
+    ]
+}</code></pre>
                     </td>
                 </tr>
                 <tr>
                     <td>DELETE</td>
-                    <td>/users/:email/:movieTitle</td>
-                    <td>Removes a movie from a user's Favorites List. Returns a message informing the user that the movie has been removed from the user's favorites list.</td>
-                    <td>
-                        <span class="parameter">:email</span> The user's email address
-                        <span class="parameter lower">:movieTitle</span> The title of the movie
+                    <td>/users/:userID/movies/:movieID</td>
+                    <td>Removes a movie from a user's Favorites List. Returns an updated user JSON.</td>
+                     <td>
+                        <span class="parameter">:userID</span>The user's unique ID string
+                        <span class="parameter lower ">:movieTitle</span>The movie's unique ID string
                     </td>
                     <td>N/A</td>
                     <td>
-                        <pre><code>movieTitle has been removed from user :id's Favorites List.</code></pre>
+                        <pre><code>{
+     "_id": "example User ID"                        
+    "Name": "example Name", 
+    "Email: "example.email@example.com",
+    "Username": "example username",
+    "Password": "examplePassword",
+    "Birhdate": "example Birthdate",
+    "Favorites": []
+}</code></pre>
                     </td>
                 </tr>
                 <tr>
                     <td>DELETE</td>
-                    <td>/users/:email</td>
+                    <td>/users/userID</td>
                     <td>Removes a user from the user list. Returns a message stating the user has been removed from myFlix, refering to the user using their username.</td>
-                    <td><span class="parameter">:email</span> The user's email address</td>
+                    <td><span class="parameter">:userID</span>The user's unique ID string</td>
                     <td>N/A</td>
                     <td>
                         <pre><code>
