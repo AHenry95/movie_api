@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Passport authentication strategies and configuration
+ * @description Configures local and JWT authentication strategies for user authentication
+ * @requires passport
+ * @requires passport-local
+ * @requires passport-jwt
+ */
 const passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     Models = require('./models.js'),

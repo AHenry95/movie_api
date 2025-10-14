@@ -1,3 +1,10 @@
+/** 
+ * @fileoverview Mongoose schemes and models for myFlix database
+ * @description Defines data models for Movies, Users, and Actors
+ * @requires mongoose
+ * @requires bcrypt
+ * 
+*/
 const mongoose = require('mongoose')
     bcrypt = require('bcrypt');
 
