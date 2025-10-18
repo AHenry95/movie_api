@@ -6,7 +6,7 @@ This backend service powers movie applications by serving data about films, dire
 ## Features
 - **User Authentication**: Secure JWT-based authentcation with password hashing
 - **Movie Database**: Access to database with comprehensive information on includes movies, including titles, decriptions, directors, genres, and cast
-- **USer Profiles**: Account creation, updates, and management
+- **User Profiles**: Account creation, updates, and management
 - **Favorites**: Users can add and remove movies from a list of favorites associated with their profile
 - **Data Validation**: Express Validator is used to validate any user form input
 - **RESTful Design**: API endpoints are clean, predictable, and follow REST principles
